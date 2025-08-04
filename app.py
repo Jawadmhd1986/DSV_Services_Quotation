@@ -6,117 +6,6 @@ from datetime import datetime
 
 app = Flask(__name__)
 
-@app.route("/relocation")
-def relocation():
-    return render_template("relocation_form.html")
-
-@app.route("/generate_relocation", methods=["POST"])
-def generate_relocation():
-    client_name = request.form["client_name"]
-    relocation_type = request.form["relocation_type"]
-    wooden_box = request.form["wooden_box"]
-    origin = request.form["origin"]
-    destination = request.form["destination"]
-    items = request.form["items"]
-    volume = float(request.form["volume"])
-    days = int(request.form["days"])
-    email = request.form.get("email", "")
-    selected_services = request.form.getlist("services")
-    today_str = datetime.today().strftime("%d %b %Y")
-
-    # Base relocation rate
-    relocation_rate = 130
-    relocation_fee = round(volume * relocation_rate, 2)
-
-    # Wooden box fee
-    box_fee = round(volume * 375, 2) if wooden_box == "Yes" else 0
-
-    # Optional service rates
-    rates = {
-        "supervisor": 1600,
-        "crane": 2000,
-        "rigger": 1200,
-        "forklift": 300,
-        "transport": 700,
-        "convoy": 1100
-    }
-
-    service_total = 0
-    selected_costs = {}
-    for key, rate in rates.items():
-        if key in selected_services:
-            selected_costs[f"{{{{{key.upper()}_COST}}}}"] = f"{rate:,.2f} AED"
-            service_total += rate
-
-    total_fee = relocation_fee + box_fee + service_total
-
-    template_path = "templates/Quotation_Relocations.docx"
-    doc = Document(template_path)
-
-    # Placeholder replacement
-    placeholders = {
-        "{{CLIENT_NAME}}": client_name,
-        "{{RELOCATION_TYPE}}": relocation_type,
-        "{{WOODEN_BOX_STATUS}}": wooden_box,
-        "{{ORIGIN}}": origin,
-        "{{DESTINATION}}": destination,
-        "{{ITEMS}}": items,
-        "{{VOLUME}}": str(volume),
-        "{{DAYS}}": str(days),
-        "{{EMAIL}}": email,
-        "{{SERVICE_TYPE}}": "Relocation",
-        "{{TODAY_DATE}}": today_str,
-        "{{TOTAL_FEE}}": f"{total_fee:,.2f} AED"
-    }
-
-    placeholders.update(selected_costs)
-
-    # Remove unselected optional rows
-    def delete_block(doc, start_tag, end_tag):
-        inside = False
-        to_delete = []
-        for i, p in enumerate(doc.paragraphs):
-            if start_tag in p.text:
-                inside = True
-                to_delete.append(i)
-            elif end_tag in p.text:
-                to_delete.append(i)
-                inside = False
-            elif inside:
-                to_delete.append(i)
-        for i in reversed(to_delete):
-            doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
-
-    for key in rates:
-        if key not in selected_services:
-            delete_block(doc, f"[{key.upper()}_ROW]", f"[/{key.upper()}_ROW]")
-
-    def replace_placeholders(doc, mapping):
-        for p in doc.paragraphs:
-            for key, val in mapping.items():
-                if key in p.text:
-                    p.text = p.text.replace(key, val)
-        for table in doc.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    for key, val in mapping.items():
-                        if key in cell.text:
-                            cell.text = cell.text.replace(key, val)
-
-    replace_placeholders(doc, placeholders)
-
-    os.makedirs("generated", exist_ok=True)
-    filename_prefix = email.split('@')[0] if email else "relocation"
-    filename = f"Quotation_{filename_prefix}.docx"
-    output_path = os.path.join("generated", filename)
-    doc.save(output_path)
-
-    return send_file(output_path, as_attachment=True)
-
-@app.route("/")
-def index():
-    return render_template("form.html")
-
 @app.route("/generate", methods=["POST"])
 def generate():
     storage_type = request.form["storage_type"]
@@ -236,6 +125,107 @@ def generate():
 
     os.makedirs("generated", exist_ok=True)
     filename_prefix = email.split('@')[0] if email else "quotation"
+    filename = f"Quotation_{filename_prefix}.docx"
+    output_path = os.path.join("generated", filename)
+    doc.save(output_path)
+
+    return send_file(output_path, as_attachment=True)
+
+
+@app.route("/generate_relocation", methods=["POST"])
+def generate_relocation():
+    client_name = request.form["client_name"]
+    relocation_type = request.form["relocation_type"]
+    wooden_box = request.form["wooden_box"]
+    origin = request.form["origin"]
+    destination = request.form["destination"]
+    items = request.form["items"]
+    volume = float(request.form["volume"])
+    days = int(request.form["days"])
+    email = request.form.get("email", "")
+    selected_services = request.form.getlist("services")
+    today_str = datetime.today().strftime("%d %b %Y")
+
+    # Base relocation rate
+    relocation_rate = 130
+    relocation_fee = round(volume * relocation_rate, 2)
+
+    # Wooden box fee
+    box_fee = round(volume * 375, 2) if wooden_box == "Yes" else 0
+
+    # Optional service rates
+    rates = {
+        "supervisor": 1600,
+        "crane": 2000,
+        "rigger": 1200,
+        "forklift": 300,
+        "transport": 700,
+        "convoy": 1100
+    }
+
+    service_total = 0
+    selected_costs = {}
+    for key, rate in rates.items():
+        if key in selected_services:
+            selected_costs[f"{{{{{key.upper()}_COST}}}}"] = f"{rate:,.2f} AED"
+            service_total += rate
+
+    total_fee = relocation_fee + box_fee + service_total
+
+    template_path = "templates/Quotation_Relocations.docx"
+    doc = Document(template_path)
+
+    placeholders = {
+        "{{CLIENT_NAME}}": client_name,
+        "{{RELOCATION_TYPE}}": relocation_type,
+        "{{WOODEN_BOX_STATUS}}": wooden_box,
+        "{{ORIGIN}}": origin,
+        "{{DESTINATION}}": destination,
+        "{{ITEMS}}": items,
+        "{{VOLUME}}": str(volume),
+        "{{DAYS}}": str(days),
+        "{{EMAIL}}": email,
+        "{{SERVICE_TYPE}}": "Relocation",
+        "{{TODAY_DATE}}": today_str,
+        "{{TOTAL_FEE}}": f"{total_fee:,.2f} AED"
+    }
+    placeholders.update(selected_costs)
+
+    def delete_block(doc, start_tag, end_tag):
+        inside = False
+        to_delete = []
+        for i, p in enumerate(doc.paragraphs):
+            if start_tag in p.text:
+                inside = True
+                to_delete.append(i)
+            elif end_tag in p.text:
+                to_delete.append(i)
+                inside = False
+            elif inside:
+                to_delete.append(i)
+        for i in reversed(to_delete):
+            doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
+
+    for key in rates:
+        if key not in selected_services:
+            delete_block(doc, f"[{key.upper()}_ROW]", f"[/{key.upper()}_ROW]")
+
+    def replace_placeholders(doc, mapping):
+        for p in doc.paragraphs:
+            for key, val in mapping.items():
+                if key in p.text:
+                    p.text = p.text.replace(key, val)
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for key, val in mapping.items():
+                        if key in cell.text:
+                            cell.text = cell.text.replace(key, val)
+
+    replace_placeholders(doc, placeholders)
+
+    os.makedirs("generated", exist_ok=True)
+    filename_prefix = email.split('@')[0] if email else "relocation"
     filename = f"Quotation_{filename_prefix}.docx"
     output_path = os.path.join("generated", filename)
     doc.save(output_path)
