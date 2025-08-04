@@ -14,6 +14,10 @@ def menu():
 def storage():
     return render_template("form.html")
 
+@app.route("/relocation")
+def relocation():
+    return render_template("relocation_form.html")
+
 @app.route("/generate", methods=["POST"])
 def generate():
     storage_type = request.form["storage_type"]
