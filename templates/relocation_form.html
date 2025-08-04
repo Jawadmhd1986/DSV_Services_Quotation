@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Relocation Quotation</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="quote-section">
+    <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo" />
+
+    <div class="quote-card">
+      <h1>Relocation Quotation</h1>
+
+      <form action="{{ url_for('generate_relocation') }}" method="post">
+
+        <label for="client_name">Client Name</label>
+        <input type="text" id="client_name" name="client_name" required />
+
+        <label for="relocation_type">Type of Relocation</label>
+        <select id="relocation_type" name="relocation_type" required>
+          <option value="">-- Select --</option>
+          <option value="Furniture">Furniture</option>
+          <option value="Small Items">Small Items</option>
+          <option value="Heavy Equipment">Heavy Equipment</option>
+        </select>
+
+        <label for="wooden_box">Require Wooden Box?</label>
+        <select id="wooden_box" name="wooden_box" required>
+          <option value="">-- Select --</option>
+          <option value="Yes">Yes</option>
+          <option value="No">No</option>
+        </select>
+
+        <label for="origin">Origin Address</label>
+        <input type="text" id="origin" name="origin" required />
+
+        <label for="destination">Destination Address</label>
+        <input type="text" id="destination" name="destination" required />
+
+        <label for="items">Item Description</label>
+        <input type="text" id="items" name="items" required />
+
+        <label for="volume">Estimated Volume (CBM)</label>
+        <input type="number" step="0.01" id="volume" name="volume" required />
+
+        <label for="days">Service Duration (Days)</label>
+        <input type="number" id="days" name="days" required />
+
+        <fieldset style="margin-top: 1rem;">
+          <legend><strong>Select Additional Services</strong></legend>
+          <label><input type="checkbox" name="services" value="supervisor" /> Supervisor</label><br />
+          <label><input type="checkbox" name="services" value="crane" /> Crane (30ton)</label><br />
+          <label><input type="checkbox" name="services" value="rigger" /> Rigger</label><br />
+          <label><input type="checkbox" name="services" value="forklift" /> Forklift 3t</label><br />
+          <label><input type="checkbox" name="services" value="transport" /> Transportation (flatbed)</label><br />
+          <label><input type="checkbox" name="services" value="convoy" /> Convoy (within AD)</label>
+        </fieldset>
+
+        <label for="email">Recipient Email (optional)</label>
+        <input type="email" id="email" name="email" />
+
+        <button type="submit" class="btn-generate">Generate Quotation</button>
+      </form>
+
+      <a href="{{ url_for('menu') }}" class="service-btn" style="margin-top: 1rem;">Back to Menu</a>
+    </div>
+  </div>
+</body>
+</html>
