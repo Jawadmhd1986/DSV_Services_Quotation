@@ -1,11 +1,3 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>DSV Services</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
-</head>
 <body>
   <div class="quote-section">
     <!-- DSV logo -->
@@ -14,13 +6,13 @@
     <div class="quote-card" style="text-align: center;">
       <h1>Our Services</h1>
 
-      <!-- Service Buttons -->
-      <a href="{{ url_for('storage') }}" class="btn-generate" style="margin-bottom: 1rem;">Storage</a>
-      <a href="{{ url_for('relocation') }}" class="btn-generate" style="margin-bottom: 1rem;">Relocation</a>
-      <a href="#" class="btn-generate" style="margin-bottom: 1rem;">Transportation (Coming Soon)</a>
-      <a href="#" class="btn-generate">Freight (Coming Soon)</a>
+      <!-- Service Buttons (Stacked vertically) -->
+      <div style="display: flex; flex-direction: column; align-items: center;">
+        <a href="{{ url_for('storage') }}" class="btn-generate" style="margin-bottom: 1rem; width: 250px;">Storage</a>
+        <a href="{{ url_for('relocation') }}" class="btn-generate" style="margin-bottom: 1rem; width: 250px;">Relocation</a>
+        <a href="#" class="btn-generate" style="margin-bottom: 1rem; width: 250px;">Transportation (Coming Soon)</a>
+        <a href="#" class="btn-generate" style="width: 250px;">Freight (Coming Soon)</a>
+      </div>
     </div>
   </div>
 </body>
-</html>
-
