@@ -5,32 +5,52 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>Relocation Quotation</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <style>
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: white;
+      border: none;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-weight: bold;
+      color: #002c77;
+      cursor: pointer;
+      text-decoration: none;
+    }
+    .form-title {
+      margin-top: 40px;
+    }
+    .quote-card {
+      width: 500px;
+    }
+  </style>
 </head>
 <body>
   <div class="quote-section">
     <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo" />
 
+    <a href="{{ url_for('menu') }}" class="back-button">&larr; Back</a>
+
     <div class="quote-card">
-      <h1>Relocation Quotation</h1>
-
-      <form action="{{ url_for('generate_relocation') }}" method="post">
-
+      <h1 class="form-title">Relocation Quotation</h1>
+      <form action="{{ url_for('generate_relocation') }}" method="POST">
         <label for="client_name">Client Name</label>
         <input type="text" id="client_name" name="client_name" required />
 
-        <label for="relocation_type">Type of Relocation</label>
+        <label for="relocation_type">Relocation Type</label>
         <select id="relocation_type" name="relocation_type" required>
-          <option value="">-- Select --</option>
-          <option value="Furniture">Furniture</option>
-          <option value="Small Items">Small Items</option>
-          <option value="Heavy Equipment">Heavy Equipment</option>
+          <option value="">— Select —</option>
+          <option>Furniture</option>
+          <option>Small Items</option>
+          <option>Heavy Equipment</option>
         </select>
 
         <label for="wooden_box">Require Wooden Box?</label>
         <select id="wooden_box" name="wooden_box" required>
-          <option value="">-- Select --</option>
-          <option value="Yes">Yes</option>
           <option value="No">No</option>
+          <option value="Yes">Yes</option>
         </select>
 
         <label for="origin">Origin Address</label>
@@ -43,29 +63,47 @@
         <input type="text" id="items" name="items" required />
 
         <label for="volume">Estimated Volume (CBM)</label>
-        <input type="number" step="0.01" id="volume" name="volume" required />
+        <input type="number" id="volume" name="volume" step="0.1" required />
 
         <label for="days">Service Duration (Days)</label>
         <input type="number" id="days" name="days" required />
 
-        <fieldset style="margin-top: 1rem;">
-          <legend><strong>Select Additional Services</strong></legend>
-          <label><input type="checkbox" name="services" value="supervisor" /> Supervisor</label><br />
-          <label><input type="checkbox" name="services" value="crane" /> Crane (30ton)</label><br />
-          <label><input type="checkbox" name="services" value="rigger" /> Rigger</label><br />
-          <label><input type="checkbox" name="services" value="forklift" /> Forklift 3t</label><br />
-          <label><input type="checkbox" name="services" value="transport" /> Transportation (flatbed)</label><br />
-          <label><input type="checkbox" name="services" value="convoy" /> Convoy (within AD)</label>
-        </fieldset>
+        <label>Select Additional Services</label>
+        <div class="checkbox-group">
+          <label><input type="checkbox" name="services" value="supervisor" /> Supervisor</label>
+          <label><input type="checkbox" name="services" value="crane" /> Crane (30ton)</label>
+          <label><input type="checkbox" name="services" value="rigger" /> Rigger</label>
+          <label><input type="checkbox" name="services" value="forklift" /> Forklift 3t</label>
+          <label><input type="checkbox" name="services" value="transport" /> Transport</label>
+          <label><input type="checkbox" name="services" value="convoy" /> Convoy</label>
+        </div>
 
         <label for="email">Recipient Email (optional)</label>
         <input type="email" id="email" name="email" />
 
-        <button type="submit" class="btn-generate">Generate Quotation</button>
+        <button type="submit" class="btn-generate">Generate</button>
       </form>
+    </div>
 
-      <a href="{{ url_for('menu') }}" class="service-btn" style="margin-top: 1rem;">Back to Menu</a>
+    <!-- Chat toggle button -->
+    <button class="chat-toggle">
+      <img src="{{ url_for('static', filename='chat-icon.png') }}" alt="Chat with DSV" />
+    </button>
+
+    <!-- Chat widget -->
+    <div class="chat-box" id="chat-box">
+      <div class="chat-header">
+        <span>DSV Assistant</span>
+        <button id="chat-close">&times;</button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-footer">
+        <input id="chat-input" type="text" placeholder="Type your message…" />
+        <button id="chat-send">Send</button>
+      </div>
     </div>
   </div>
+
+  <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 </body>
 </html>
