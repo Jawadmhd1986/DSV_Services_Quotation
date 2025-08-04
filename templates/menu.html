@@ -1,18 +1,42 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DSV Services</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
 <body>
   <div class="quote-section">
     <!-- DSV logo -->
     <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo" />
 
     <div class="quote-card" style="text-align: center;">
-      <h1>Our Services</h1>
+      <h1>Quotation Generator</h1>
+      <a href="{{ url_for('storage') }}" class="btn-generate" style="margin-bottom: 1rem;">Storage</a>
+      <a href="{{ url_for('relocation') }}" class="btn-generate" style="margin-bottom: 1rem;">Relocation</a>
+      <a href="#" class="btn-generate" style="margin-bottom: 1rem;">Transportation (Coming Soon)</a>
+      <a href="#" class="btn-generate">Freight (Coming Soon)</a>
+    </div>
 
-      <!-- Service Buttons (Stacked vertically) -->
-      <div style="display: flex; flex-direction: column; align-items: center;">
-        <a href="{{ url_for('storage') }}" class="btn-generate" style="margin-bottom: 1rem; width: 250px;">Storage</a>
-        <a href="{{ url_for('relocation') }}" class="btn-generate" style="margin-bottom: 1rem; width: 250px;">Relocation</a>
-        <a href="#" class="btn-generate" style="margin-bottom: 1rem; width: 250px;">Transportation (Coming Soon)</a>
-        <a href="#" class="btn-generate" style="width: 250px;">Freight (Coming Soon)</a>
+    <!-- Chat toggle button -->
+    <button class="chat-toggle">
+      <img src="{{ url_for('static', filename='chat-icon.png') }}" alt="Chat with DSV" />
+    </button>
+
+    <!-- Chat widget -->
+    <div class="chat-box" id="chat-box">
+      <div class="chat-header">
+        <span>DSV Assistant</span>
+        <button id="chat-close">&times;</button>
+      </div>
+      <div class="chat-messages" id="chat-messages"></div>
+      <div class="chat-footer">
+        <input id="chat-input" type="text" placeholder="Type your message…" />
+        <button id="chat-send">Send</button>
       </div>
     </div>
   </div>
+  <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
 </body>
+</html>
