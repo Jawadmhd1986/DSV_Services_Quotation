@@ -6,6 +6,10 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+@app.route("/relocation")
+def relocation():
+    return render_template("relocation_form.html")
+
 @app.route("/")
 def index():
     return render_template("form.html")
@@ -129,6 +133,155 @@ def generate():
 
     os.makedirs("generated", exist_ok=True)
     filename_prefix = email.split('@')[0] if email else "quotation"
+    filename = f"Quotation_{filename_prefix}.docx"
+    output_path = os.path.join("generated", filename)
+    doc.save(output_path)
+
+    return send_file(output_path, as_attachment=True)
+
+@app.route("/generate_relocation", methods=["POST"])
+def generate_relocation():
+    client_name = request.form["client_name"]
+    origin = request.form["origin"]
+    destination = request.form["destination"]
+    items = request.form["items"]
+    volume = float(request.form["volume"])
+    days = int(request.form["days"])
+    email = request.form.get("email", "")
+    today_str = datetime.today().strftime("%d %b %Y")
+
+    rate_per_cbm = 130
+    relocation_fee = volume * rate_per_cbm
+    total_fee = f"{relocation_fee:,.2f} AED"
+
+    template_path = "templates/Quotation_Relocations.docx"
+    doc = Document(template_path)
+
+    placeholders = {
+        "{{CLIENT_NAME}}": client_name,
+        "{{ORIGIN}}": origin,
+        "{{DESTINATION}}": destination,
+        "{{ITEMS}}": items,
+        "{{VOLUME}}": str(volume),
+        "{{DAYS}}": str(days),
+        "{{EMAIL}}": email,
+        "{{SERVICE_TYPE}}": "Relocation",
+        "{{TODAY_DATE}}": today_str
+    }
+
+    def replace_placeholders(doc, mapping):
+        for p in doc.paragraphs:
+            for key, val in mapping.items():
+                if key in p.text:
+                    p.text = p.text.replace(key, val)
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for key, val in mapping.items():
+                        if key in cell.text:
+                            cell.text = cell.text.replace(key, val)
+
+    replace_placeholders(doc, placeholders)
+
+    os.makedirs("generated", exist_ok=True)
+    filename_prefix = email.split('@')[0] if email else "relocation"
+    filename = f"Quotation_{filename_prefix}.docx"
+    output_path = os.path.join("generated", filename)
+    doc.save(output_path)
+
+    return send_file(output_path, as_attachment=True)
+
+@app.route("/generate_relocation", methods=["POST"])
+def generate_relocation():
+    from docx import Document
+
+    client_name = request.form["client_name"]
+    origin = request.form["origin"]
+    destination = request.form["destination"]
+    items = request.form["items"]
+    volume = float(request.form["volume"])
+    days = int(request.form["days"])
+    email = request.form.get("email", "")
+    selected_services = request.form.getlist("services")
+    today_str = datetime.today().strftime("%d %b %Y")
+
+    # Relocation base rate
+    relocation_rate = 130
+    relocation_fee = round(volume * relocation_rate, 2)
+
+    # Optional service rates (per day or per trip)
+    rates = {
+        "supervisor": 1600,
+        "crane": 2000,
+        "rigger": 1200,
+        "forklift": 300,
+        "transport": 700,
+        "convoy": 1100
+    }
+
+    # Load Word template
+    template_path = "templates/Quotation_Relocations.docx"
+    doc = Document(template_path)
+
+    # Base placeholders
+    placeholders = {
+        "{{CLIENT_NAME}}": client_name,
+        "{{ORIGIN}}": origin,
+        "{{DESTINATION}}": destination,
+        "{{ITEMS}}": items,
+        "{{VOLUME}}": str(volume),
+        "{{DAYS}}": str(days),
+        "{{EMAIL}}": email,
+        "{{SERVICE_TYPE}}": "Relocation",
+        "{{TODAY_DATE}}": today_str,
+        "{{TOTAL_FEE}}": f"{relocation_fee:,.2f} AED"
+    }
+
+    # Insert optional service costs or delete rows if not selected
+    for key, rate in rates.items():
+        tag_placeholder = f"{{{{{key.upper()}_COST}}}}"
+        tag_start = f"[{key.upper()}_ROW]"
+        tag_end = f"[/{key.upper()}_ROW]"
+
+        if key in selected_services:
+            placeholders[tag_placeholder] = f"{rate:,.2f} AED"
+        else:
+            delete_block(doc, tag_start, tag_end)
+
+    # Replace placeholders
+    def replace_placeholders(doc, mapping):
+        for p in doc.paragraphs:
+            for key, val in mapping.items():
+                if key in p.text:
+                    p.text = p.text.replace(key, val)
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for key, val in mapping.items():
+                        if key in cell.text:
+                            cell.text = cell.text.replace(key, val)
+
+    # Delete tagged rows from Word
+    def delete_block(doc, start_tag, end_tag):
+        inside = False
+        to_delete = []
+        for i, p in enumerate(doc.paragraphs):
+            if start_tag in p.text:
+                inside = True
+                to_delete.append(i)
+            elif end_tag in p.text:
+                to_delete.append(i)
+                inside = False
+            elif inside:
+                to_delete.append(i)
+        for i in reversed(to_delete):
+            doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
+
+    replace_placeholders(doc, placeholders)
+
+    # Save and return document
+    os.makedirs("generated", exist_ok=True)
+    filename_prefix = email.split('@')[0] if email else "relocation"
     filename = f"Quotation_{filename_prefix}.docx"
     output_path = os.path.join("generated", filename)
     doc.save(output_path)
