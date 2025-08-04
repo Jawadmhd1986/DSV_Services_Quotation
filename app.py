@@ -6,6 +6,10 @@ from datetime import datetime
 
 app = Flask(__name__)
 
+@app.route("/")
+def menu():
+    return render_template("menu.html")
+
 @app.route("/generate", methods=["POST"])
 def generate():
     storage_type = request.form["storage_type"]
