@@ -1,71 +1,129 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
+  <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Relocation Quotation</title>
-  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+  <style>
+    body {
+      margin: 0;
+      padding: 0;
+      font-family: Arial, sans-serif;
+      background-color: #002c77;
+      color: #002c77;
+    }
+    .container {
+      max-width: 500px;
+      margin: 80px auto 40px auto;
+      padding: 2rem;
+      background-color: white;
+      border-radius: 15px;
+      box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+    }
+    h1 {
+      text-align: center;
+      color: #002c77;
+    }
+    label {
+      display: block;
+      margin-top: 1rem;
+      font-weight: bold;
+    }
+    input, select, textarea {
+      width: 100%;
+      padding: 0.6rem;
+      margin-top: 0.3rem;
+      border: 1px solid #002c77;
+      border-radius: 5px;
+    }
+    .services {
+      margin-top: 1rem;
+    }
+    .services label {
+      font-weight: normal;
+      display: block;
+    }
+    .btn-generate {
+      display: block;
+      width: 100%;
+      margin-top: 2rem;
+      padding: 0.8rem;
+      background-color: #002c77;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1rem;
+    }
+    .btn-back {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      color: white;
+      text-decoration: none;
+      font-weight: bold;
+      font-size: 1rem;
+    }
+    .dsv-logo {
+      display: block;
+      margin: 0 auto 1rem auto;
+      width: 120px;
+    }
+  </style>
 </head>
 <body>
-  <div class="quote-section">
-    <!-- Back to menu -->
-    <a href="/" style="position: absolute; top: 20px; left: 20px; font-weight: bold; color: white; text-decoration: none;">← Back</a>
+  <a href="/" class="btn-back">&larr; Back</a>
+  <div class="container">
+    <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo">
+    <h1>Relocation Quotation</h1>
+    <form action="/generate_relocation" method="post">
+      <label for="client_name">Client Name</label>
+      <input type="text" name="client_name" required>
 
-    <!-- DSV logo -->
-    <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo" />
+      <label for="relocation_type">Relocation Type</label>
+      <select name="relocation_type">
+        <option value="Furniture">Furniture</option>
+        <option value="Small Items">Small Items</option>
+        <option value="Heavy Equipment">Heavy Equipment</option>
+      </select>
 
-    <div class="quote-card">
-      <h1>Relocation Quotation</h1>
-      <form action="/generate_relocation" method="POST">
+      <label for="wooden_box">Wooden Box Required?</label>
+      <select name="wooden_box">
+        <option value="No">No</option>
+        <option value="Yes">Yes</option>
+      </select>
 
-        <label for="client_name">Client Name</label>
-        <input type="text" name="client_name" required />
+      <label for="origin">Origin Address</label>
+      <input type="text" name="origin" required>
 
-        <label for="relocation_type">Relocation Type</label>
-        <select name="relocation_type" required>
-          <option value="">— Select —</option>
-          <option value="Furniture">Furniture</option>
-          <option value="Small Items">Small Items</option>
-          <option value="Heavy Equipment">Heavy Equipment</option>
-        </select>
+      <label for="destination">Destination Address</label>
+      <input type="text" name="destination" required>
 
-        <label for="wooden_box">Wooden Box Required?</label>
-        <select name="wooden_box" required>
-          <option value="No">No</option>
-          <option value="Yes">Yes</option>
-        </select>
+      <label for="items">Item Description</label>
+      <input type="text" name="items" required>
 
-        <label for="origin">Origin Address</label>
-        <input type="text" name="origin" required />
+      <label for="volume">Estimated Volume (CBM)</label>
+      <input type="number" name="volume" required>
 
-        <label for="destination">Destination Address</label>
-        <input type="text" name="destination" required />
+      <label for="days">Service Duration (Days)</label>
+      <input type="number" name="days" required>
 
-        <label for="items">Item Description</label>
-        <input type="text" name="items" required />
+      <label for="email">Recipient Email (optional)</label>
+      <input type="email" name="email">
 
-        <label for="volume">Estimated Volume (CBM)</label>
-        <input type="number" name="volume" step="any" required />
-
-        <label for="days">Service Duration (Days)</label>
-        <input type="number" name="days" required />
-
+      <div class="services">
         <label>Select Additional Services</label>
-        <div style="text-align: left;">
-          <label><input type="checkbox" name="services" value="supervisor" /> Supervisor</label><br>
-          <label><input type="checkbox" name="services" value="crane" /> Crane (30ton)</label><br>
-          <label><input type="checkbox" name="services" value="rigger" /> Rigger</label><br>
-          <label><input type="checkbox" name="services" value="forklift" /> Forklift 3t</label><br>
-          <label><input type="checkbox" name="services" value="transport" /> Transport</label><br>
-          <label><input type="checkbox" name="services" value="convoy" /> Convoy</label>
-        </div>
+        <label><input type="checkbox" name="services" value="supervisor"> Supervisor</label>
+        <label><input type="checkbox" name="services" value="crane"> Crane (30ton)</label>
+        <label><input type="checkbox" name="services" value="rigger"> Rigger</label>
+        <label><input type="checkbox" name="services" value="forklift"> Forklift 3t</label>
+        <label><input type="checkbox" name="services" value="transport"> Transport</label>
+        <label><input type="checkbox" name="services" value="convoy"> Convoy</label>
+      </div>
 
-        <label for="email">Recipient Email (optional)</label>
-        <input type="email" name="email" />
-
-        <button type="submit">Generate</button>
-      </form>
-    </div>
+      <button type="submit" class="btn-generate">Generate</button>
+    </form>
   </div>
 
   <!-- Chatbot -->
