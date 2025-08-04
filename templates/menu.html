@@ -5,38 +5,59 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>DSV Services</title>
   <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+  <style>
+    .back-button {
+      position: absolute;
+      top: 20px;
+      left: 20px;
+      background-color: #002c77;
+      color: white;
+      padding: 8px 16px;
+      border: none;
+      border-radius: 8px;
+      font-weight: bold;
+      text-decoration: none;
+    }
+
+    .back-button:hover {
+      background-color: #001f5c;
+    }
+
+    .service-buttons {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+  </style>
 </head>
 <body>
   <div class="quote-section">
-    <!-- DSV logo -->
+    <!-- Back to Menu Button -->
+    {% if request.path != '/' %}
+      <a href="{{ url_for('menu') }}" class="back-button">← Back</a>
+    {% endif %}
+
+    <!-- DSV Logo -->
     <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo" />
 
+    <!-- White Card Container -->
     <div class="quote-card" style="text-align: center;">
       <h1>Quotation Generator</h1>
-      <a href="{{ url_for('storage') }}" class="btn-generate" style="margin-bottom: 1rem;">Storage</a>
-      <a href="{{ url_for('relocation') }}" class="btn-generate" style="margin-bottom: 1rem;">Relocation</a>
-      <a href="#" class="btn-generate" style="margin-bottom: 1rem;">Transportation (Coming Soon)</a>
-      <a href="#" class="btn-generate">Freight (Coming Soon)</a>
+
+      <!-- Service Buttons -->
+      <div class="service-buttons">
+        <a href="{{ url_for('storage') }}" class="btn-generate">Storage</a>
+        <a href="{{ url_for('relocation') }}" class="btn-generate">Relocation</a>
+        <a href="#" class="btn-generate">Transportation (Coming Soon)</a>
+        <a href="#" class="btn-generate">Freight (Coming Soon)</a>
+      </div>
     </div>
 
-    <!-- Chat toggle button -->
+    <!-- Chatbot Toggle Button -->
     <button class="chat-toggle">
       <img src="{{ url_for('static', filename='chat-icon.png') }}" alt="Chat with DSV" />
     </button>
 
-    <!-- Chat widget -->
-    <div class="chat-box" id="chat-box">
-      <div class="chat-header">
-        <span>DSV Assistant</span>
-        <button id="chat-close">&times;</button>
-      </div>
-      <div class="chat-messages" id="chat-messages"></div>
-      <div class="chat-footer">
-        <input id="chat-input" type="text" placeholder="Type your message…" />
-        <button id="chat-send">Send</button>
-      </div>
-    </div>
-  </div>
-  <script src="{{ url_for('static', filename='chatbot.js') }}"></script>
-</body>
-</html>
+    <!-- Chatbot Box -->
+    <div class="chat-box" id="chat-box
