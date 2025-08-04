@@ -9,6 +9,10 @@ app = Flask(__name__)
 @app.route("/")
 def menu():
     return render_template("menu.html")
+    
+@app.route("/storage")
+def storage():
+    return render_template("form.html")
 
 @app.route("/generate", methods=["POST"])
 def generate():
