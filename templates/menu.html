@@ -1,0 +1,25 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>DSV Services</title>
+  <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}" />
+</head>
+<body>
+  <div class="quote-section">
+    <!-- DSV logo -->
+    <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo" />
+
+    <div class="quote-card" style="text-align: center;">
+      <h1>Our Services</h1>
+
+      <!-- Service Buttons -->
+      <a href="{{ url_for('storage') }}" class="btn-generate" style="margin-bottom: 1rem;">Storage</a>
+      <a href="{{ url_for('relocation') }}" class="btn-generate" style="margin-bottom: 1rem;">Relocation</a>
+      <a href="#" class="btn-generate" style="margin-bottom: 1rem;">Transportation</a>
+      <a href="#" class="btn-generate">Freight</a>
+    </div>
+  </div>
+</body>
+</html>
