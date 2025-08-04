@@ -12,8 +12,6 @@ def relocation():
 
 @app.route("/generate_relocation", methods=["POST"])
 def generate_relocation():
-    from docx import Document
-
     client_name = request.form["client_name"]
     relocation_type = request.form["relocation_type"]
     wooden_box = request.form["wooden_box"]
@@ -26,16 +24,14 @@ def generate_relocation():
     selected_services = request.form.getlist("services")
     today_str = datetime.today().strftime("%d %b %Y")
 
-    # Base rate
+    # Base relocation rate
     relocation_rate = 130
     relocation_fee = round(volume * relocation_rate, 2)
 
-    # Wooden box cost if selected
-    box_fee = 0
-    if wooden_box == "Yes":
-        box_fee = round(volume * 375, 2)
+    # Wooden box fee
+    box_fee = round(volume * 375, 2) if wooden_box == "Yes" else 0
 
-    # Optional service fixed rates
+    # Optional service rates
     rates = {
         "supervisor": 1600,
         "crane": 2000,
@@ -45,7 +41,6 @@ def generate_relocation():
         "convoy": 1100
     }
 
-    # Calculate selected service total and placeholder rows
     service_total = 0
     selected_costs = {}
     for key, rate in rates.items():
@@ -53,14 +48,12 @@ def generate_relocation():
             selected_costs[f"{{{{{key.upper()}_COST}}}}"] = f"{rate:,.2f} AED"
             service_total += rate
 
-    # Total
     total_fee = relocation_fee + box_fee + service_total
 
-    # Load Word doc
     template_path = "templates/Quotation_Relocations.docx"
     doc = Document(template_path)
 
-    # Replace placeholders
+    # Placeholder replacement
     placeholders = {
         "{{CLIENT_NAME}}": client_name,
         "{{RELOCATION_TYPE}}": relocation_type,
@@ -76,10 +69,9 @@ def generate_relocation():
         "{{TOTAL_FEE}}": f"{total_fee:,.2f} AED"
     }
 
-    # Add selected service costs
     placeholders.update(selected_costs)
 
-    # Remove unselected service rows
+    # Remove unselected optional rows
     def delete_block(doc, start_tag, end_tag):
         inside = False
         to_delete = []
@@ -99,7 +91,6 @@ def generate_relocation():
         if key not in selected_services:
             delete_block(doc, f"[{key.upper()}_ROW]", f"[/{key.upper()}_ROW]")
 
-    # Replace placeholders in all text and tables
     def replace_placeholders(doc, mapping):
         for p in doc.paragraphs:
             for key, val in mapping.items():
@@ -114,7 +105,6 @@ def generate_relocation():
 
     replace_placeholders(doc, placeholders)
 
-    # Save file
     os.makedirs("generated", exist_ok=True)
     filename_prefix = email.split('@')[0] if email else "relocation"
     filename = f"Quotation_{filename_prefix}.docx"
