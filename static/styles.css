@@ -120,7 +120,7 @@ body {
   right: 2rem;
   width: 300px;
   max-width: 90%;
-  max-height: 70vh;              /* cap height at 70% of viewport */
+  max-height: 70vh;
   background: var(--white);
   border-radius: 10px;
   box-shadow: 0 4px 16px rgba(0,0,0,0.2);
@@ -223,11 +223,27 @@ body {
     bottom: 5rem;
     right: 5%;
   }
-
-  /* 🟦 Add this block: */
   .chat-toggle {
-    bottom: env(safe-area-inset-bottom, 1.8rem); /* raise above iPhone home bar */
+    bottom: env(safe-area-inset-bottom, 1.8rem);
     right: 1rem;
     z-index: 2000;
   }
+}
+
+/* --- Relocation Form Enhancements --- */
+fieldset {
+  border: none;
+  margin: 1rem 0;
+  padding: 0;
+}
+
+legend {
+  font-weight: bold;
+  color: var(--text-dsv);
+  font-size: 0.95rem;
+  margin-bottom: 0.5rem;
+}
+
+.quote-card label input[type="checkbox"] {
+  margin-right: 0.5rem;
 }
