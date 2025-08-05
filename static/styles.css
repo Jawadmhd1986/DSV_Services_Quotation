@@ -91,6 +91,7 @@ body {
   cursor: pointer;
   transition: background 0.2s;
   font-weight: bold;
+  text-decoration: none; /* ← Add this line */
 }
 .btn-generate:hover {
   background: var(--blue-dsv-light);
@@ -247,3 +248,4 @@ legend {
 .quote-card label input[type="checkbox"] {
   margin-right: 0.5rem;
 }
+
