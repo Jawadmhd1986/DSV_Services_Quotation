@@ -176,17 +176,6 @@ def generate_relocation():
     }
 
     service_total = 0
-    selected_costs = {}
-    for key, rate in rates.items():
-        if key in selected_services:
-            selected_costs[f"{{{{{key.upper()}_COST}}}}"] = f"{rate:,.2f} AED"
-            service_total += rate
-
-    total_fee = relocation_fee + box_fee + service_total
-
-    template_path = "templates/Quotation_Relocations.docx"
-    doc = Document(template_path)
-
     placeholders = {
         "{{CLIENT_NAME}}": client_name,
         "{{RELOCATION_TYPE}}": relocation_type,
@@ -198,11 +187,50 @@ def generate_relocation():
         "{{DAYS}}": str(days),
         "{{EMAIL}}": email,
         "{{SERVICE_TYPE}}": "Relocation",
-        "{{TODAY_DATE}}": today_str,
-        "{{TOTAL_FEE}}": f"{total_fee:,.2f} AED"
+        "{{TODAY_DATE}}": today_str
     }
-    placeholders.update(selected_costs)
 
+    for key in rates:
+        block_start = f"[{key.upper()}_ROW]"
+        block_end = f"[/{key.upper()}_ROW]"
+        placeholder = f"{{{{{key.upper()}_COST}}}}"
+
+        if key in selected_services:
+            cost = f"{rates[key]:,.2f} AED"
+            placeholders[placeholder] = cost
+            service_total += rates[key]
+        else:
+            # Remove unused service rows and clear placeholders
+            delete_block = lambda doc, start, end: [
+                doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
+                for i in reversed([
+                    idx for idx, p in enumerate(doc.paragraphs)
+                    if start in p.text or end in p.text or (inside := start in p.text or inside) and (inside := not (end in p.text))])
+            ]
+            delete_block(Document("templates/Quotation_Relocations.docx"), block_start, block_end)
+            placeholders[placeholder] = ""
+
+    total_fee = relocation_fee + box_fee + service_total
+    placeholders["{{TOTAL_FEE}}"] = f"{total_fee:,.2f} AED"
+
+    # Load template
+    template_path = "templates/Quotation_Relocations.docx"
+    doc = Document(template_path)
+
+    # Replace placeholders
+    def replace_placeholders(doc, mapping):
+        for p in doc.paragraphs:
+            for key, val in mapping.items():
+                if key in p.text:
+                    p.text = p.text.replace(key, val)
+        for table in doc.tables:
+            for row in table.rows:
+                for cell in row.cells:
+                    for key, val in mapping.items():
+                        if key in cell.text:
+                            cell.text = cell.text.replace(key, val)
+
+    # Proper delete block for real template
     def delete_block(doc, start_tag, end_tag):
         inside = False
         to_delete = []
@@ -218,31 +246,10 @@ def generate_relocation():
         for i in reversed(to_delete):
             doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
 
-        for key in rates:
-    block_start = f"[{key.upper()}_ROW]"
-    block_end = f"[/{key.upper()}_ROW]"
-    placeholder = f"{{{{{key.upper()}_COST}}}}"
-
-            if key in selected_services:
-        # Keep the block and insert cost
-        cost = f"{rates[key]:,.2f} AED"
-        placeholders[placeholder] = cost
-            else:
-        # Remove the entire section and clear placeholder
-        delete_block(doc, block_start, block_end)
-        placeholders[placeholder] = ""
-
-    def replace_placeholders(doc, mapping):
-        for p in doc.paragraphs:
-            for key, val in mapping.items():
-                if key in p.text:
-                    p.text = p.text.replace(key, val)
-        for table in doc.tables:
-            for row in table.rows:
-                for cell in row.cells:
-                    for key, val in mapping.items():
-                        if key in cell.text:
-                            cell.text = cell.text.replace(key, val)
+    # Delete unused service blocks
+    for key in rates:
+        if key not in selected_services:
+            delete_block(doc, f"[{key.upper()}_ROW]", f"[/{key.upper()}_ROW]")
 
     replace_placeholders(doc, placeholders)
 
