@@ -219,8 +219,18 @@ def generate_relocation():
             doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
 
     for key in rates:
-        if key not in selected_services:
-            delete_block(doc, f"[{key.upper()}_ROW]", f"[/{key.upper()}_ROW]")
+    block_start = f"[{key.upper()}_ROW]"
+    block_end = f"[/{key.upper()}_ROW]"
+    placeholder = f"{{{{{key.upper()}_COST}}}}"
+
+    if key in selected_services:
+        # Keep the block and insert cost
+        cost = f"{rates[key]:,.2f} AED"
+        placeholders[placeholder] = cost
+    else:
+        # Remove the entire section and clear placeholder
+        delete_block(doc, block_start, block_end)
+        placeholders[placeholder] = ""
 
     def replace_placeholders(doc, mapping):
         for p in doc.paragraphs:
