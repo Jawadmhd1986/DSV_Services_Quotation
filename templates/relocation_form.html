@@ -12,50 +12,77 @@
       font-family: Arial, sans-serif;
       background-color: #002c77;
       color: #002c77;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
     }
+
+    .dsv-logo {
+      margin-top: 1.5rem;
+      width: 120px;
+    }
+
     .container {
+      width: 100%;
       max-width: 500px;
-      margin: 80px auto 40px auto;
-      padding: 2rem;
+      padding: 1.5rem;
       background-color: white;
       border-radius: 15px;
       box-shadow: 0 0 10px rgba(0, 0, 0, 0.2);
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      flex-grow: 1;
+      margin-top: 1rem;
+      margin-bottom: 1rem;
+      height: calc(100vh - 150px); /* Adjusted height to avoid scroll */
+      overflow-y: auto;
     }
+
     h1 {
       text-align: center;
       color: #002c77;
+      margin-bottom: 1rem;
     }
+
     label {
       display: block;
-      margin-top: 1rem;
+      margin-top: 0.75rem;
       font-weight: bold;
     }
+
     input, select, textarea {
       width: 100%;
-      padding: 0.6rem;
+      padding: 0.5rem;
       margin-top: 0.3rem;
       border: 1px solid #002c77;
       border-radius: 5px;
+      font-size: 0.95rem;
     }
+
     .services {
       margin-top: 1rem;
     }
+
     .services label {
       font-weight: normal;
       display: block;
+      margin-left: 0.5rem;
     }
+
     .btn-generate {
-      display: block;
-      width: 100%;
-      margin-top: 2rem;
-      padding: 0.8rem;
+      margin-top: 1.2rem;
+      padding: 0.75rem;
       background-color: #002c77;
       color: white;
       border: none;
       border-radius: 8px;
       cursor: pointer;
       font-size: 1rem;
+      width: 100%;
     }
+
     .btn-back {
       position: absolute;
       top: 20px;
@@ -65,17 +92,20 @@
       font-weight: bold;
       font-size: 1rem;
     }
-    .dsv-logo {
-      display: block;
-      margin: 0 auto 1rem auto;
-      width: 120px;
+
+    @media (max-height: 700px) {
+      .container {
+        height: auto;
+        margin-bottom: 2rem;
+      }
     }
   </style>
 </head>
 <body>
   <a href="/" class="btn-back">&larr; Back</a>
+  <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo">
+
   <div class="container">
-    <img src="{{ url_for('static', filename='dsv_logo.png') }}" alt="DSV Logo" class="dsv-logo">
     <h1>Relocation Quotation</h1>
     <form action="/generate_relocation" method="post">
       <label for="client_name">Client Name</label>
