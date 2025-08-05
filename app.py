@@ -218,16 +218,16 @@ def generate_relocation():
         for i in reversed(to_delete):
             doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
 
-    for key in rates:
+        for key in rates:
     block_start = f"[{key.upper()}_ROW]"
     block_end = f"[/{key.upper()}_ROW]"
     placeholder = f"{{{{{key.upper()}_COST}}}}"
 
-    if key in selected_services:
+            if key in selected_services:
         # Keep the block and insert cost
         cost = f"{rates[key]:,.2f} AED"
         placeholders[placeholder] = cost
-    else:
+            else:
         # Remove the entire section and clear placeholder
         delete_block(doc, block_start, block_end)
         placeholders[placeholder] = ""
