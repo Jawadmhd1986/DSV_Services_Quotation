@@ -200,21 +200,6 @@ def generate_relocation():
             placeholders[placeholder] = cost
             service_total += rates[key]
         else:
-            # Remove unused service rows and clear placeholders
-            def delete_block(doc, start_tag, end_tag):
-    inside = False
-    to_delete = []
-    for i, p in enumerate(doc.paragraphs):
-        if start_tag in p.text:
-            inside = True
-            to_delete.append(i)
-        elif end_tag in p.text:
-            to_delete.append(i)
-            inside = False
-        elif inside:
-            to_delete.append(i)
-    for i in reversed(to_delete):
-        doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
 
             delete_block(Document("templates/Quotation_Relocations.docx"), block_start, block_end)
             placeholders[placeholder] = ""
@@ -238,7 +223,21 @@ def generate_relocation():
                     for key, val in mapping.items():
                         if key in cell.text:
                             cell.text = cell.text.replace(key, val)
-
+# Remove unused service rows and clear placeholders
+            def delete_block(doc, start_tag, end_tag):
+    inside = False
+    to_delete = []
+    for i, p in enumerate(doc.paragraphs):
+        if start_tag in p.text:
+            inside = True
+            to_delete.append(i)
+        elif end_tag in p.text:
+            to_delete.append(i)
+            inside = False
+        elif inside:
+            to_delete.append(i)
+    for i in reversed(to_delete):
+        doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
     # Proper delete block for real template
     def delete_block(doc, start_tag, end_tag):
         inside = False
