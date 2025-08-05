@@ -205,8 +205,7 @@ def generate_relocation():
                 doc.paragraphs[i]._element.getparent().remove(doc.paragraphs[i]._element)
                 for i in reversed([
                     idx for idx, p in enumerate(doc.paragraphs)
-                    if start in p.text or end in p.text or (inside := start in p.text or inside) and (inside := not (end in p.text))])
-            ]
+                    if start in p.text or end in p.text or (inside := start in p.text or inside) and (inside := not (end in p.text))])]
             delete_block(Document("templates/Quotation_Relocations.docx"), block_start, block_end)
             placeholders[placeholder] = ""
 
